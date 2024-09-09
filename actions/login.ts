@@ -1,6 +1,7 @@
 'use server';
 
 import * as z from 'zod';
+import { AuthError } from 'next-auth';
 
 import { signIn } from '@/auth';
 import { LoginSchema } from '@/schemas';
@@ -22,6 +23,17 @@ export const login = async (values: z.infer<typeof LoginSchema>) => {
       redirectTo: DEFAULT_LOGIN_REDIRECT,
     });
   } catch (error) {
-    // TODO: Handle error
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case 'CredentialsSignin':
+          return { error: 'Invalid credentials!' };
+
+        default:
+          return { error: 'Something went wrong!' };
+      }
+    }
+    throw error;
   }
+
+  return { success: 'User logged in!' };
 };
