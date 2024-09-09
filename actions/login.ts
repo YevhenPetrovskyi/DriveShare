@@ -24,13 +24,13 @@ export const login = async (values: z.infer<typeof LoginSchema>) => {
     return { error: 'Email does not exist!' };
   }
 
-  if (!existingUser.emailVerified) {
-    const verificationToken = await generateVerificationToken(
-      existingUser.email as string
-    );
+  // if (!existingUser.emailVerified) {
+  //   const verificationToken = await generateVerificationToken(
+  //     existingUser.email as string
+  //   );
 
-    return { succes: 'Confirmation email sent!' };
-  }
+  //   return { success: 'Confirmation email sent!' };
+  // }
 
   try {
     await signIn('credentials', {

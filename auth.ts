@@ -29,15 +29,21 @@ export const {
     },
   },
   callbacks: {
-    // async signIn({ user }) {
-    //   const existingUser = await getUserById(user.id as string);
+    async signIn({ user, account }) {
+      if (account?.provider !== 'credentials') {
+        return true;
+      }
 
-    //   if (!existingUser || !existingUser.emailVerified) {
-    //     return false;
-    //   }
+      const existingUser = await getUserById(user.id as string);
 
-    //   return true;
-    // },
+      if (!existingUser?.emailVerified) {
+        return false;
+      }
+
+      // TODO: Add 2FA check
+
+      return true;
+    },
     async session({ session, token }) {
       if (session.user && token.sub) {
         session.user.id = token.sub;
