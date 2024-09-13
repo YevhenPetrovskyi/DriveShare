@@ -1,22 +1,23 @@
 'use client';
 
 import * as z from 'zod';
-
-import { useTransition, useState } from 'react';
+import { useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { BeatLoader } from 'react-spinners';
 
-import { RegisterSchema } from '@/schemas';
 import { register } from '@/actions/register';
 
+import { RegisterSchema } from '@/schemas';
 import {
   Form,
+  FormControl,
   FormField,
+  FormItem,
   FormLabel,
   FormMessage,
-  FormItem,
-  FormControl,
 } from '@/components/ui/form';
+
 import { CardWrapper } from '@/components/auth/card-wrapper';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -24,32 +25,28 @@ import { FormError } from '@/components/form-error';
 import { FormSuccess } from '@/components/form-success';
 
 export const RegisterForm = () => {
+  const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | undefined>('');
   const [success, setSuccess] = useState<string | undefined>('');
-  const [isPending, startTransition] = useTransition();
-
   const form = useForm<z.infer<typeof RegisterSchema>>({
     resolver: zodResolver(RegisterSchema),
     defaultValues: {
+      name: '',
       email: '',
       password: '',
-      name: '',
     },
   });
 
   const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
     setError('');
     setSuccess('');
-
     startTransition(() => {
       register(values).then((data) => {
         setError(data.error);
-
         setSuccess(data.success);
       });
     });
   };
-
   return (
     <CardWrapper
       headerLabel="Create an account"
@@ -58,7 +55,7 @@ export const RegisterForm = () => {
       showSocial
     >
       <Form {...form}>
-        <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-4">
             <FormField
               control={form.control}
@@ -69,9 +66,9 @@ export const RegisterForm = () => {
                   <FormControl>
                     <Input
                       {...field}
-                      type="text"
                       disabled={isPending}
-                      placeholder="John Doe"
+                      placeholder="John doe"
+                      type="text"
                     />
                   </FormControl>
                   <FormMessage />
@@ -87,8 +84,8 @@ export const RegisterForm = () => {
                   <FormControl>
                     <Input
                       {...field}
-                      placeholder="john.doe@example.com"
                       disabled={isPending}
+                      placeholder="john.doe@me.com"
                       type="email"
                     />
                   </FormControl>
@@ -105,8 +102,8 @@ export const RegisterForm = () => {
                   <FormControl>
                     <Input
                       {...field}
-                      placeholder="••••••••"
                       disabled={isPending}
+                      placeholder="******"
                       type="password"
                     />
                   </FormControl>
@@ -117,8 +114,8 @@ export const RegisterForm = () => {
           </div>
           <FormError message={error} />
           <FormSuccess message={success} />
-          <Button type="submit" className="w-full" disabled={isPending}>
-            Create an account
+          <Button type="submit" disabled={isPending} className="w-full">
+            {isPending ? <BeatLoader color="white" /> : `Register`}
           </Button>
         </form>
       </Form>

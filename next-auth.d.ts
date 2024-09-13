@@ -2,7 +2,7 @@ import NextAuth, { type DefaultSession } from 'next-auth';
 import { JWT } from '@auth/core/jwt';
 import { UserRole } from '@prisma/client';
 
-export type ExtendsUser = DefaultSession['user'] & {
+export type ExtendedUser = DefaultSession['user'] & {
   id: string;
   role: UserRole;
   isTwoFactorEnabled: boolean;
@@ -11,6 +11,6 @@ export type ExtendsUser = DefaultSession['user'] & {
 
 declare module 'next-auth' {
   interface Session {
-    user: ExtendsUser;
+    user: ExtendedUser;
   }
 }
